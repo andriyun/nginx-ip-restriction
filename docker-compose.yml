@@ -1,0 +1,30 @@
+version: "2"
+
+networks:
+  backendnginx:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.10.0/16
+          gateway: 10.10.10.1
+
+
+services:
+  web:
+    image: nginx
+    container_name: nginx_restriction_test
+    volumes:
+     - ./html:/var/www/html
+     - ./default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      backendnginx:
+        ipv4_address: 10.10.10.5
+
+  vm1:
+    image: ubuntu:latest
+    container_name: nginx_restriction_vm1
+    networks:
+      backendnginx:
+        ipv4_address: 10.10.10.6
+    command:
+      "bash -c 'while true; do date; sleep 60; done;'"
